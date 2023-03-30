@@ -2,3 +2,4 @@ ds-test/=lib/openzeppelin-contracts/lib/forge-std/lib/ds-test/src/
 forge-std/=lib/openzeppelin-contracts/lib/forge-std/src/
 openzeppelin-contracts/=lib/openzeppelin-contracts/
 v2-core/=lib/v2-core/contracts/
+v2-periphery/=lib/v2-periphery/contracts/
