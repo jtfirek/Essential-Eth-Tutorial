@@ -3,7 +3,8 @@ pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
 import "../src/MyToken.sol";
-import "uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
+import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+import "v2-core/interfaces/IUniswapV2Factory.sol"; // Uniswap V2 Factory
 
 contract PoolTest is Test {
     address uniRouterAddress = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
