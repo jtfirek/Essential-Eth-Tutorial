@@ -2,13 +2,20 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
+import "../src/MyToken.sol";
+import "uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 
 contract PoolTest is Test {
     address uniRouterAddress = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
 
     function setUp() public {
-        // Deploy MyToken.sol
+        // 1e6 = 1 million 
+        // 1 ERC20 = 1e18 atomic units
+        // 1e6 * 1e18 = 1e24
+        MyToken mytoken = new MyToken(1e24);
+
         // Create pool using factory address to include MyToken/WETH
+
     }
 
     function testAddLiquidity() public {
