@@ -10,8 +10,6 @@ import "v2-periphery/interfaces/IUniswapV2Router02.sol"; // Uniswap V2 Router
 import "v2-periphery/interfaces/IWETH.sol";
 import {Utils} from "./utils/Utils.sol";
 
-// Define the combined interface
-
 
 contract PoolTest is Test {
     // using utils to create my account
@@ -82,7 +80,7 @@ contract PoolTest is Test {
         IERC20(address(weth)).approve(address(uniRouter), 50 ether);
 
         // add liquidity to pool
-        uniRouter.addLiquidity(
+        (,, uint liquidity) = uniRouter.addLiquidity(
             address(myToken), // address of the liquidity pool
             address(weth), // address of WETH
             1e24, // amount of token to add
@@ -94,13 +92,54 @@ contract PoolTest is Test {
         );
         vm.stopPrank();
 
+        // check if my account received the liquidity tokens
+        address pairAddress = uniswapFactory.getPair(address(weth), address(myToken));
+        uint256 balance = ERC20(pairAddress).balanceOf(me);
+
+        assertEq(balance, liquidity, "Balance should be equal to liquidity");
     }
 
     function testRemoveLiquidity() public {
-        // Remove liquidity to pool here
+        // Add liquidity first
+        testAddLiquidity();
+
+        address pairAddress = uniswapFactory.getPair(address(weth), address(myToken));
+        uint256 balance = ERC20(pairAddress).balanceOf(me);
+
+        assertTrue(balance !=  0, "Assert that liquidity tokens exist");
+
+        // switch context to the me account to remove liquidity
+        vm.startPrank(me);
+
+        // Get the liquidity token contract
+        ERC20 liquidityToken = ERC20(pairAddress);
+
+        // Approve the router to spend liquidity tokens
+        uint256 liquidity = liquidityToken.balanceOf(me);
+        liquidityToken.approve(address(uniRouter), liquidity);
+
+        // Remove liquidity from the pool
+        (uint amountMyToken, uint amountWETH) = uniRouter.removeLiquidity(
+            address(myToken),
+            address(weth),
+            liquidity,
+            0, // no minimum amount of myToken
+            0, // no minimum amount of WETH
+            me,
+            block.timestamp
+        );
+        vm.stopPrank();
+
+        // Check if my account received the correct amount of tokens and WETH
+        uint256 myTokenBalanceAfter = ERC20(pairAddress).balanceOf(me);
+        assertTrue(myTokenBalanceAfter ==  0, "Assert that liquidity tokens exist");
     }
 
     function testSwap() public {
-        // Perform a swap in the liquidity pool
+        // Add liquidity first
+        testAddLiquidity();
+
+        
+
     }
 }
