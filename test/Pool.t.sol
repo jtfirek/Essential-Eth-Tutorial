@@ -102,11 +102,13 @@ contract PoolTest is Test {
     function testRemoveLiquidity() public {
         // Add liquidity first
         testAddLiquidity();
-
         address pairAddress = uniswapFactory.getPair(address(weth), address(myToken));
-        uint256 balance = ERC20(pairAddress).balanceOf(me);
 
-        assertTrue(balance !=  0, "Assert that liquidity tokens exist");
+        // record balances before removing liquidity
+        uint256 myTokenBalanceBefore = ERC20(address(myToken)).balanceOf(me);
+        uint256 wethBalanceBefore = ERC20(address(weth)).balanceOf(me);
+        uint256 liquidityTokenBalanceBefore = ERC20(pairAddress).balanceOf(me);
+        assertTrue(liquidityTokenBalanceBefore !=  0, "Assert that liquidity was successfully added");
 
         // switch context to the me account to remove liquidity
         vm.startPrank(me);
@@ -130,16 +132,50 @@ contract PoolTest is Test {
         );
         vm.stopPrank();
 
-        // Check if my account received the correct amount of tokens and WETH
-        uint256 myTokenBalanceAfter = ERC20(pairAddress).balanceOf(me);
-        assertTrue(myTokenBalanceAfter ==  0, "Assert that liquidity tokens exist");
+        // Checking to make the sure the balances are correct
+        uint256 liquidityTokenBalanceAfter = ERC20(pairAddress).balanceOf(me);
+        assertTrue(liquidityTokenBalanceAfter ==  0, "Assert that liquidity tokens are removed");
+
+        uint256 myTokenBalanceAfter = ERC20(address(myToken)).balanceOf(me);
+        uint256 wethBalanceAfter = ERC20(address(weth)).balanceOf(me);
+        assertEq(myTokenBalanceAfter, myTokenBalanceBefore + amountMyToken, "Assert that myToken balance is correct");
+        assertEq(wethBalanceAfter, wethBalanceBefore + amountWETH, "Assert that WETH balance is correct");
     }
 
     function testSwap() public {
         // Add liquidity first
         testAddLiquidity();
 
-        
+        // switch context to the me account to execute the swap
+        vm.startPrank(me);
 
+        // Get the pair address
+        address pairAddress = uniswapFactory.getPair(address(weth), address(myToken));
+
+        // give router an allowance of at least amountInMax on the input token.
+        uint256 wethToSwap = 1 ether;
+        IERC20(address(weth)).approve(address(uniRouter), wethToSwap);
+
+        // Execute the swap
+        address[] memory path = new address[](2);
+        path[0] = address(weth);
+        path[1] = address(myToken);
+
+        uint[] memory amounts = uniRouter.swapExactTokensForTokens(
+        wethToSwap, // input amount of WETH to swap
+        0, // no minimum output amount
+        path, // path from WETH to MyToken
+        me, // recipient of the output tokens
+        block.timestamp
+        );
+
+        vm.stopPrank();
+        
+        uint256 inputAmountWeth = amounts[0];
+        uint256 outputAmountMyToken = amounts[1];
+
+        uint256 myTokenBalanceAfter = ERC20(address(myToken)).balanceOf(me);
+        assertEq(inputAmountWeth, wethToSwap, "Assert that input amount of WETH is correct");
+        assertEq(outputAmountMyToken, myTokenBalanceAfter, "Assert that output amount of MyToken is correct");
     }
 }
