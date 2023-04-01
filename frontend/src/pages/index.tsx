@@ -48,15 +48,6 @@ const Home: NextPage = () => {
       console.log("please install MetaMask")
       return
     }
-    /*
-    //change from window.ethereum.enable() which is deprecated
-    //call window.ethereum.request() directly
-    window.ethereum.request({ method: 'eth_requestAccounts' })
-    .then((accounts:any)=>{
-      if(accounts.length>0) setCurrentAccount(accounts[0])
-    })
-    .catch('error',console.error)
-    */
 
     //we can do it using ethers.js
     const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -80,7 +71,7 @@ const Home: NextPage = () => {
         <title>ERC-20 Generator</title>
       </Head>
 
-      <Heading as='h2' size='2xl' textAlign="center" my={4}>Token Creation and Uniswap Liquidity Management</Heading>          
+      <Heading as='h1' size='4xl' textAlign="center" my={4}>Token Creation and Uniswap Liquidity Management</Heading>          
       <Text textAlign="center" my={4}>
   Create your own ERC-20 tokens, wrap ETH into ERC-20s, effortlessly deploy an ERC20/ERC20 Uniswap V2 liquidity pool, and withdraw liquidity with ease
 </Text>
@@ -88,13 +79,27 @@ const Home: NextPage = () => {
       <VStack>
         <Box w='100%' my={4}>
         {currentAccount  
-          ? <Button type="button" w='100%' onClick={onClickDisconnect}>
+          ? <Button
+          type="button"
+          w='100%'
+          h='50px'
+          fontSize='lg'
+          onClick={onClickConnect}
+          borderColor="gray.800"
+          borderWidth="2px">
                 Account:{currentAccount}
-            </Button>
-          : <Button type="button" w='100%' onClick={onClickConnect}>
+          </Button>
+          :  <Button
+          type="button"
+          w='100%'
+          h='50px'
+          fontSize='lg'
+          onClick={onClickConnect}
+          borderColor="gray.800"
+          borderWidth="2px"
+          >
             Connect MetaMask 
                <Image src="/fox.png" alt="MetaMask Icon" boxSize="24px" mr={2} />
-            
               </Button>
         }
         </Box>
