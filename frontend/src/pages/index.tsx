@@ -9,61 +9,26 @@ import { useState, useEffect} from 'react'
 import {ethers} from "ethers"
 import ReadERC20 from "components/ReadERC20"
 import TransferERC20 from "components/TransferERC20"
+import { useAccountInfoContext } from 'utils/accountInfoContext'
+
 
 declare let window:any
 const addressERC20 = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
 
-const Home: NextPage = () => {
-  const [balance, setBalance] = useState<string | undefined>()
-  const [currentAccount, setCurrentAccount] = useState<string | undefined>()
-  const [chainId, setChainId] = useState<number | undefined>()
-  const [chainname, setChainName] = useState<string | undefined>()
 
-  useEffect(() => {
-    //get ETH balance and network info only when having currentAccount 
-    if(!currentAccount || !ethers.utils.isAddress(currentAccount)) return
 
-    //client side code
-    if(!window.ethereum) {
-      console.log("please install MetaMask")
-      return
-    }
-
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    provider.getBalance(currentAccount).then((result)=>{
-      setBalance(ethers.utils.formatEther(result))
-    }).catch((e)=>console.log(e))
-
-    provider.getNetwork().then((result)=>{
-      setChainId(result.chainId)
-      setChainName(result.name)
-    }).catch((e)=>console.log(e))
-
-  },[currentAccount])
-
-  //click connect
+  const Home: NextPage = () => {
+  // call the useAccountInfo hook
+  const accountInfo = useAccountInfoContext();
+  const { currentAccount, balance, chainId, chainName, connectMetaMask, disconnectMetaMask } = accountInfo;
+ 
   const onClickConnect = () => {
-    //client side code
-    if(!window.ethereum) {
-      console.log("please install MetaMask")
-      return
-    }
+    connectMetaMask && connectMetaMask();
+  };
 
-    //we can do it using ethers.js
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    provider.send("eth_requestAccounts", [])
-    .then((accounts)=>{
-      if(accounts.length>0) setCurrentAccount(accounts[0])
-    }).catch((e)=>console.log(e))
-
-  }
-
-  //click disconnect
   const onClickDisconnect = () => {
-    console.log("onClickDisConnect")
-    setBalance(undefined)
-    setCurrentAccount(undefined)
-  }
+    disconnectMetaMask && disconnectMetaMask();
+  };
 
   return (
     <>
@@ -84,7 +49,7 @@ const Home: NextPage = () => {
           w='100%'
           h='50px'
           fontSize='lg'
-          onClick={onClickConnect}
+          onClick={onClickDisconnect}
           borderColor="gray.800"
           borderWidth="2px">
                 Account:{currentAccount}
@@ -103,15 +68,22 @@ const Home: NextPage = () => {
               </Button>
         }
         </Box>
+
         {currentAccount  
           ?<Box  mb={0} p={4} w='100%' borderWidth="1px" borderRadius="lg">
           <Heading my={4}  fontSize='xl'>Account info</Heading>
           <Text>ETH Balance of current account: {balance}</Text>
-          <Text>Chain Info: ChainId {chainId} name {chainname}</Text>
+          <Text>Chain Info: ChainId {chainId} name {chainName}</Text>
         </Box>
-        :<></>
+        :<Text>
+        Don't have MetaMask?{' '}
+        <NextLink href='https://metamask.io/' passHref>
+          <Box as='a' color='blue.500'>
+            Get it now.
+          </Box>
+        </NextLink>
+      </Text>
         }
-
       </VStack>
     </>
   )

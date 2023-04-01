@@ -15,6 +15,8 @@ type Props = {
   children: ReactNode;
 };
 
+
+
 export function Layout(props: Props) {
   return (
     <Flex direction="column" minHeight="100vh">
@@ -26,8 +28,6 @@ export function Layout(props: Props) {
     </Flex>
   );
 }
-
-
 
 
 
