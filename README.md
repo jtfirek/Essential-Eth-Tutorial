@@ -1,28 +1,16 @@
-# Ether.Fi Test Project
-## Pre-Requisites
+# Ether.fi Project
 
-- Install Foundry (https://github.com/foundry-rs/foundry)
-- Create a mainnet RPC endpoint here (https://alchemy.com)
-- Add your newly created RPC endpoint to the `.env` file following the samples guidelines
-- Run `source .env`
-## Task
+Here is a link to the `Pool.t.sol` that completes the assigned task:
+[Link to Example File](./forge-tests/test/Pool.t.sol)
 
-Using the given contracts, complete the following tasks.  
-There is no need to deploy the contracts, using unit tests to demostrate the functionality is enough
+After completing a Solidity assignment, I decided to build a full-stack Dapp uses all the skills you guys are looking for in the Decentralized Application Front End Developer. My Dapp enables users to create their own ERC-20 tokens, wrap ETH into ERC-20s, deploy an ERC20/ERC20 Uniswap V2 liquidity pool, and withdraw liquidity using a metamask wallet.
 
-- Create an ERC-20 Token called "My Token" (MTK) and mint 1 million tokens to yourself
-- Inside `Pool.t.sol`:
-  - Deploy a WETH/MTK Uniswap V2 liquidity pool using the factory address provided
-  - Deposit WETH and MTK tokens into the liquidity pool
-  - Swap using the liquidity pool
-  - Withdraw tokens from the liquidity pool
 
-## Commands
+# Project Structure
 
-- Build - `forge build`
-- Test - `forge test --fork-url $ETH_RPC_URL -vv` 
+- `Frontend`: built with React, Next.js, Chakra UI, and ether.js
+- `backend`: Node.js server with a GraphQL gateway
+- `contracts`: deployed Solidity smart contracts
+- `migrates`: scripts for deploying contracts
+- `forge-tests`: tests the smart contracts and contains the orginial task
 
-## Helpful Links
-
-- UniswapV2Router02 (https://docs.uniswap.org/contracts/v2/reference/smart-contracts/router-02#addliquidity)
-- Foundry (https://book.getfoundry.sh/)
