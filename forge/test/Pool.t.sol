@@ -10,28 +10,36 @@ import "v2-periphery/interfaces/IUniswapV2Router02.sol"; // Uniswap V2 Router
 import "v2-periphery/interfaces/IWETH.sol";
 import {Utils} from "./utils/Utils.sol";
 
-
+/**
+ * @title PoolTest
+ * @dev This contract tests the functionality of MyToken and Uniswap V2 pool interactions.
+ */
 contract PoolTest is Test {
-    // using utils to create my account
+    // Utils instance for creating user
     Utils internal utils;
     address payable[] internal users;
     address internal me;
 
     // Uniswap V2 Router
-    address internal UNISWAP_ROUTER_ADDRESS = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
+    address internal immutable UNISWAP_ROUTER_ADDRESS = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
     IUniswapV2Router02 internal uniRouter;
 
     // Uniswap V2 Factory
-    address internal UNISWAP_FACTORY_ADDRESS = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
+    address internal immutable UNISWAP_FACTORY_ADDRESS = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
     IUniswapV2Factory internal uniswapFactory;
 
     // Wrapped Ether instance
-    IWETH weth;
+    IWETH internal weth;
     // MyToken instance
     MyToken internal myToken;
 
+
+    /**
+     * @dev Set up the test environment, including creating user accounts, deploying MyToken,
+     * and initializing Uniswap V2 Router and Factory contracts.
+     */
     function setUp() public {
-        // create user with 100 ETH balance
+        // Create user with 100 ETH balance
         utils = new Utils();
         users = utils.createUsers(1);
         me = users[0];
@@ -41,46 +49,54 @@ contract PoolTest is Test {
         myToken = new MyToken();
         address myTokenAddress = address(myToken);
 
-        /// create instance of the UniswapV2Factory interface which allows us to interact with the Uniswap V2 Factory
+        // Create instance of the UniswapV2Factory interface to interact with the Uniswap V2 Factory
         uniswapFactory = IUniswapV2Factory(UNISWAP_FACTORY_ADDRESS);
 
-        // // create instance of the UniswapV2Router02 interface
+        // Create instance of the UniswapV2Router02 interface
         uniRouter = IUniswapV2Router02(UNISWAP_ROUTER_ADDRESS);
 
-        // // Create an instance of the IWETH interface which allows us to interact with the WETH contract
+        // Create an instance of the IWETH interface to interact with the WETH contract
         weth = IWETH(uniRouter.WETH());
-        
-        // // mint 1 million tokens to the me
-        // // 1e6 = 1 million, 1 ERC20 = 1e18 atomic units
-        // // 1e6 * 1e18 = 1e24
-        myToken.mint(me, 1e24);
-        
-        // // Create pool using factory address to include MyToken/WETH
+
+        // Mint 1 million tokens for the user, accounting for the decimal places in the ERC20 token
+        uint256 tokenAmount = 1e6 * 10**myToken.decimals();
+        myToken.mint(me, tokenAmount);
+
+        // Create pool using factory address to include MyToken/WETH
         uniswapFactory.createPair(address(weth), myTokenAddress);
     }
 
+    /**
+     * @dev Test the initial setup of the contract.
+     */
     function test_setup() public {
-        // check if the balance of the me is 1 million 
-        uint256 balance = ERC20(address(myToken)).balanceOf(me);
-        assertEq(balance, 1e24, "Balance should be 1 million");
+        // Assert that the initial balance of the user is 1 million tokens
+        uint256 userBalance = myToken.balanceOf(me);
+        uint256 expectedBalance = 1e24;
+        assertEq(userBalance, expectedBalance, "User balance should be 1 million tokens");
 
-        // check if the pool exists
-        address pairAddress = uniswapFactory.getPair(address(weth), address(myToken));
-        assertTrue(pairAddress != address(0), "Pair address should not be 0");
+        // Assert that the token pair is created in the Uniswap factory
+        address tokenPairAddress = uniswapFactory.getPair(address(weth), address(myToken));
+        bool tokenPairExists = tokenPairAddress != address(0);
+        assertTrue(tokenPairExists, "Token pair address should not be 0");
     }
 
+    /**
+     * @dev Test adding liquidity to the MyToken/WETH pool.
+     * This function simulates the process of adding liquidity and checks if the
+     * liquidity provider receives the correct amount of liquidity tokens.
+     */
     function testAddLiquidity() public {
-
-        // switch context to the me account to add liquidity 50 WETH, 1 million MyToken
+        // Switch context to the me account to add liquidity 50 WETH, 1 million MyToken
         vm.startPrank(me);
 
-        // approve the router allowance of my tokens and wrap eth
+        // Approve the router allowance of my tokens and wrap eth
         myToken.approve(address(uniRouter), 1e24);
         weth.deposit{value: 50 ether}();
         IERC20(address(weth)).approve(address(uniRouter), 50 ether);
 
-        // add liquidity to pool
-        (,, uint liquidity) = uniRouter.addLiquidity(
+        // Add liquidity to pool
+        (,, uint256 liquidity) = uniRouter.addLiquidity(
             address(myToken), // address of the liquidity pool
             address(weth), // address of WETH
             1e24, // amount of token to add
@@ -92,25 +108,30 @@ contract PoolTest is Test {
         );
         vm.stopPrank();
 
-        // check if my account received the liquidity tokens
+        // Check if the user account received the liquidity tokens
         address pairAddress = uniswapFactory.getPair(address(weth), address(myToken));
         uint256 balance = ERC20(pairAddress).balanceOf(me);
 
         assertEq(balance, liquidity, "Balance should be equal to liquidity");
     }
 
+    /**
+     * @dev Test removing liquidity from the MyToken/WETH pool.
+     * This function simulates the process of removing liquidity and checks if the
+     * liquidity provider receives the correct amount of tokens.
+     */
     function testRemoveLiquidity() public {
         // Add liquidity first
         testAddLiquidity();
         address pairAddress = uniswapFactory.getPair(address(weth), address(myToken));
 
-        // record balances before removing liquidity
+        // Record balances before removing liquidity
         uint256 myTokenBalanceBefore = ERC20(address(myToken)).balanceOf(me);
         uint256 wethBalanceBefore = ERC20(address(weth)).balanceOf(me);
         uint256 liquidityTokenBalanceBefore = ERC20(pairAddress).balanceOf(me);
-        assertTrue(liquidityTokenBalanceBefore !=  0, "Assert that liquidity was successfully added");
+        assertTrue(liquidityTokenBalanceBefore != 0, "Assert that liquidity was successfully added");
 
-        // switch context to the me account to remove liquidity
+        // Switch context to the me account to remove liquidity
         vm.startPrank(me);
 
         // Get the liquidity token contract
@@ -121,7 +142,7 @@ contract PoolTest is Test {
         liquidityToken.approve(address(uniRouter), liquidity);
 
         // Remove liquidity from the pool
-        (uint amountMyToken, uint amountWETH) = uniRouter.removeLiquidity(
+        (uint256 amountMyToken, uint256 amountWETH) = uniRouter.removeLiquidity(
             address(myToken),
             address(weth),
             liquidity,
@@ -134,7 +155,7 @@ contract PoolTest is Test {
 
         // Checking to make the sure the balances are correct
         uint256 liquidityTokenBalanceAfter = ERC20(pairAddress).balanceOf(me);
-        assertTrue(liquidityTokenBalanceAfter ==  0, "Assert that liquidity tokens are removed");
+        assertTrue(liquidityTokenBalanceAfter == 0, "Assert that liquidity tokens are removed");
 
         uint256 myTokenBalanceAfter = ERC20(address(myToken)).balanceOf(me);
         uint256 wethBalanceAfter = ERC20(address(weth)).balanceOf(me);
@@ -142,17 +163,19 @@ contract PoolTest is Test {
         assertEq(wethBalanceAfter, wethBalanceBefore + amountWETH, "Assert that WETH balance is correct");
     }
 
+    /**
+     * @dev Test swapping tokens using the Uniswap router.
+     * This function simulates the process of swapping tokens and checks if the
+     * recipient receives the correct amount of tokens.
+     */
     function testSwap() public {
         // Add liquidity first
         testAddLiquidity();
 
-        // switch context to the me account to execute the swap
+        // Switch context to the user account to execute the swap
         vm.startPrank(me);
 
-        // Get the pair address
-        address pairAddress = uniswapFactory.getPair(address(weth), address(myToken));
-
-        // give router an allowance of at least amountInMax on the input token.
+        // Give router an allowance of at least amountInMax on the input token.
         uint256 wethToSwap = 1 ether;
         IERC20(address(weth)).approve(address(uniRouter), wethToSwap);
 
@@ -160,21 +183,21 @@ contract PoolTest is Test {
         address[] memory path = new address[](2);
         path[0] = address(weth);
         path[1] = address(myToken);
-
-        uint[] memory amounts = uniRouter.swapExactTokensForTokens(
-        wethToSwap, // input amount of WETH to swap
-        0, // no minimum output amount
-        path, // path from WETH to MyToken
-        me, // recipient of the output tokens
-        block.timestamp
+        uint256[] memory amounts = uniRouter.swapExactTokensForTokens(
+            wethToSwap, // input amount of WETH to swap
+            0, // no minimum output amount
+            path, // path from WETH to MyToken
+            me, // recipient of the output tokens
+            block.timestamp
         );
 
         vm.stopPrank();
-        
+
         uint256 inputAmountWeth = amounts[0];
         uint256 outputAmountMyToken = amounts[1];
-
         uint256 myTokenBalanceAfter = ERC20(address(myToken)).balanceOf(me);
+
+        // Check if the swap was successful
         assertEq(inputAmountWeth, wethToSwap, "Assert that input amount of WETH is correct");
         assertEq(outputAmountMyToken, myTokenBalanceAfter, "Assert that output amount of MyToken is correct");
     }

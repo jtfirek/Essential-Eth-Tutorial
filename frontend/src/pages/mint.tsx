@@ -21,87 +21,87 @@ const MintPage: NextPage = () => {
     // redirect to not connected page if there is no current account
     return <NotConnectedPage />;
   }
-  // const { currentAccount } = useAccountInfo();
-  // const [amount, setAmount] = useState('');
-  // const [isMinting, setIsMinting] = useState(false);
+  const { currentAccount } = useAccountInfo();
+  const [amount, setAmount] = useState('');
+  const [isMinting, setIsMinting] = useState(false);
 
-  // const handleMint = async () => {
-  //   try {
-  //     setIsMinting(true);
+  const handleMint = async () => {
+    try {
+      setIsMinting(true);
 
-  //     const provider = new ethers.providers.Web3Provider(window.ethereum);
-  //     const signer = provider.getSigner();
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
 
-  //     const contract = new ethers.Contract(addressERC20, ['function mint(address to, uint256 amount)'], signer);
+      const contract = new ethers.Contract(addressERC20, ['function mint(address to, uint256 amount)'], signer);
 
-  //     const tx = await contract.mint(currentAccount, ethers.utils.parseEther(amount));
-  //     await tx.wait();
+      const tx = await contract.mint(currentAccount, ethers.utils.parseEther(amount));
+      await tx.wait();
 
-  //     setAmount('');
-  //     setIsMinting(false);
+      setAmount('');
+      setIsMinting(false);
 
-  //     alert(`Successfully minted ${amount} tokens!`);
-  //   } catch (error) {
-  //     console.error(error);
-  //     setIsMinting(false);
-  //     alert('Error minting tokens!');
-  //   }
-  // };
+      alert(`Successfully minted ${amount} tokens!`);
+    } catch (error) {
+      console.error(error);
+      setIsMinting(false);
+      alert('Error minting tokens!');
+    }
+  };
 
-  return (
-    <>
-      <Head>
-        <title>Mint Tokens</title>
-      </Head>
-      <Heading as='h1' size='4xl' textAlign='center' my={4}>
-        Mint Tokens
-      </Heading>
-      <Text textAlign='center' my={4}>
-        Mint your own ERC-20 tokens.
-      </Text>
-      <Box w='100%' p={4} borderWidth='1px' borderRadius='lg'>
-        <FormControl id='amount' mb={4}>
-          <FormLabel>Token Name:</FormLabel>
-          <Input
-            type='number'
-            value={amount}
-            onChange={(event) => setAmount(event.target.value)}
-            placeholder='MyToken'
-          />
-        </FormControl>
-        <FormControl id='amount' mb={4}>
-          <FormLabel> The Token Symbol: </FormLabel>
-          <Input
-            type='number'
-            value={amount}
-            onChange={(event) => setAmount(event.target.value)}
-            placeholder='MTK'
-          />
-        </FormControl>
-        <FormControl id='amount' mb={4}>
-          <FormLabel> Token Amount: </FormLabel>
-          <Input
-            type='number'
-            value={amount}
-            onChange={(event) => setAmount(event.target.value)}
-            placeholder='Enter amount'
-          />
-        </FormControl>
+  // return (
+  //   <>
+  //     <Head>
+  //       <title>Mint Tokens</title>
+  //     </Head>
+  //     <Heading as='h1' size='4xl' textAlign='center' my={4}>
+  //       Mint Tokens
+  //     </Heading>
+  //     <Text textAlign='center' my={4}>
+  //       Mint your own ERC-20 tokens.
+  //     </Text>
+  //     <Box w='100%' p={4} borderWidth='1px' borderRadius='lg'>
+  //       <FormControl id='amount' mb={4}>
+  //         <FormLabel>Token Name:</FormLabel>
+  //         <Input
+  //           type='number'
+  //           value={amount}
+  //           onChange={(event) => setAmount(event.target.value)}
+  //           placeholder='MyToken'
+  //         />
+  //       </FormControl>
+  //       <FormControl id='amount' mb={4}>
+  //         <FormLabel> The Token Symbol: </FormLabel>
+  //         <Input
+  //           type='number'
+  //           value={amount}
+  //           onChange={(event) => setAmount(event.target.value)}
+  //           placeholder='MTK'
+  //         />
+  //       </FormControl>
+  //       <FormControl id='amount' mb={4}>
+  //         <FormLabel> Token Amount: </FormLabel>
+  //         <Input
+  //           type='number'
+  //           value={amount}
+  //           onChange={(event) => setAmount(event.target.value)}
+  //           placeholder='Enter amount'
+  //         />
+  //       </FormControl>
         
-        <Button
-          type='button'
-          onClick={handleMint}
-          disabled={!currentAccount || isMinting || !amount}
-          isLoading={isMinting}
-          loadingText='Minting...'
-          borderColor='gray.800'
-          borderWidth='2px'
-        >
-          Mint Tokens
-        </Button>
-      </Box>
-    </>
-  );
+  //       <Button
+  //         type='button'
+  //         onClick={handleMint}
+  //         disabled={!currentAccount || isMinting || !amount}
+  //         isLoading={isMinting}
+  //         loadingText='Minting...'
+  //         borderColor='gray.800'
+  //         borderWidth='2px'
+  //       >
+  //         Mint Tokens
+  //       </Button>
+  //     </Box>
+  //   </>
+  // );
 };
 
 export default MintPage;

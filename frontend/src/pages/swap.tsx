@@ -1,7 +1,7 @@
 // src/pages/swap.tsx
 import { NextPage } from 'next';
 import Head from 'next/head';
-import { Heading, Spinner, Text, Center } from '@chakra-ui/react';
+import { Heading, Text } from '@chakra-ui/react';
 import NotConnectedPage from './not-connected';
 import { useAccountInfoContext } from 'utils/accountInfoContext';
 

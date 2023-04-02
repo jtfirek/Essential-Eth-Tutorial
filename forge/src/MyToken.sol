@@ -12,6 +12,5 @@ contract MyToken is ERC20 {
     function mint(address to, uint256 amount) public {
         // Call the inherited mint function
         _mint(to, amount);
-  }
-
+    }
 }
