@@ -84,7 +84,7 @@ const Home: NextPage = () => {
 
         {/* Show account info or MetaMask download link */}
         {currentAccount ? (
-          <Box mb={0} p={4} w="100%" borderWidth="2px" borderRadius="lg" borderColor="gray.800" bg="grey.900">
+          <Box mb={0} p={4} w="100%" borderWidth="2px" borderRadius="lg" borderColor="gray.800">
             <Heading my={4} fontSize="xl">
               Account Information
             </Heading>
