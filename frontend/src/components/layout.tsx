@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Text, Center, Flex } from '@chakra-ui/react';
+import { Text, Center, Flex, Spacer } from '@chakra-ui/react';
 import Header from './header';
 import {
   Box,
@@ -64,23 +64,9 @@ const SocialButton = ({
 
 export default function SmallWithSocial() {
   return (
-    <Flex
-      as="footer"
-      bg={useColorModeValue('gray.100', 'gray.700')}
-      color={useColorModeValue('gray.700', 'gray.200')}
-      p={6}
-      textAlign={{ base: 'center', md: 'left' }}
-      height="80px" // Add this line
-    >
-      <Container
-        as={Stack}
-        maxW={'6xl'}
-        py={4}
-        direction={{ base: 'column', md: 'row' }}
-        spacing={4}
-        justify={'space-between'}
-        align={{ base: 'center', md: 'center' }}>
+      <Flex as='footer' bg={useColorModeValue('gray.100', 'gray.900')} p={4} alignItems='center'>
         <Text > ERC-20 Token Generator by Jacob Firek </Text>
+        <Spacer />
         <Stack direction={'row'} spacing={6}>
           <SocialButton label={'Twitter'} href={'https://twitter.com/jacob_firek'}>
             <FaTwitter fontSize="1.5rem" />
@@ -92,7 +78,6 @@ export default function SmallWithSocial() {
             <FaGithub fontSize="1.5rem" />
           </SocialButton>
         </Stack>
-      </Container>
-    </Flex>
+      </Flex>
   );
 }

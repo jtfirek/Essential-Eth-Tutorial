@@ -6,7 +6,6 @@ import { useAccountInfo } from 'utils/accountsLogic';
 import NextLink from 'next/link';
 
 const NotConnectedPage: NextPage = () => {
-  const { connectMetaMask } = useAccountInfo();
 
   return (
     <>

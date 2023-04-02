@@ -22,9 +22,8 @@ export default function Header() {
   };
 
   return (
-    <Flex as='header' bg={useColorModeValue('gray.100', 'gray.900')} p={4} alignItems='center'>
-      <Heading size="md">{siteTitle}</Heading>
-      <Box  mx="auto" >
+    <Flex as='header' bg={useColorModeValue('gray.100', 'gray.900')} p={4} alignItems='center' >
+      <Box >
       <NextLink href="/" passHref>
         <Button as="a" variant="ghost" mr={2}>
           Home
@@ -41,6 +40,7 @@ export default function Header() {
         </Button>
       </NextLink>
       </Box>
+      <Spacer />
       <Box>
         {currentAccount
           ? 
