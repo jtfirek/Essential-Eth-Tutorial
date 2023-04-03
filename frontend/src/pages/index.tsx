@@ -20,6 +20,9 @@ const Home: NextPage = () => {
     chainName,
     connectMetaMask,
     disconnectMetaMask,
+    myTokenBalance,
+    WETHBalance,
+    liquidityTokenBalance,
   } = accountInfo;
 
   // handle connecting to MetaMask
@@ -90,7 +93,9 @@ const Home: NextPage = () => {
             </Heading>
             <Text> Chain Name: {chainName} </Text>
             <Text>ETH Balance: {balance}</Text>
-            <Text> Balance of Custom Token: 0 </Text>
+            <Text> Balance of WETH: {WETHBalance} </Text>
+            <Text> Balance of Custom Token: {myTokenBalance} </Text>
+            <Text> Balance of Liquidity Token: {liquidityTokenBalance} </Text>
           </Box>
         ) : (
           <Text>

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
+import { provider, setProviderandSigner } from "./contractFunctions";
 
-declare let window: any;
+
 
 
 export type AccountInfo = {
@@ -9,16 +10,19 @@ export type AccountInfo = {
   balance: string | undefined;
   chainId: number | undefined;
   chainName: string | undefined;
+  myTokenBalance: string | undefined;
+  WETHBalance: string | undefined;
+  liquidityTokenBalance: string | undefined;
   connectMetaMask?: () => Promise<void>;
   disconnectMetaMask?: () => void;
+  getCurrentAccount?: (tokenUpdate?: string, liquityUpdate?: string, wethUpdate?: string) => void;
 };
 
 
 // hook to manage account info
 export const useAccountInfo = () => {
   const connectMetaMask = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-
+    await setProviderandSigner();
     try {
       await provider.send("eth_requestAccounts", []);
       getCurrentAccount();
@@ -33,23 +37,16 @@ export const useAccountInfo = () => {
       balance: undefined,
       chainId: undefined,
       chainName: undefined,
+      myTokenBalance:undefined,
+      WETHBalance: undefined,
+      liquidityTokenBalance: undefined,
       connectMetaMask: connectMetaMask,
       disconnectMetaMask: disconnectMetaMask,
+      getCurrentAccount: getCurrentAccount,
     });
   };
-  // state is initialized with undefined values
-  const [accountInfo, setAccountInfo] = useState<AccountInfo>({
-    currentAccount: undefined,
-    balance: undefined,
-    chainId: undefined,
-    chainName: undefined,
-    connectMetaMask: connectMetaMask,
-    disconnectMetaMask: disconnectMetaMask,
-  });
 
-  const getCurrentAccount = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-
+    const getCurrentAccount = async (tokenUpdate?: string, liquityUpdate?: string, wethUpdate?: string) => {
     const accounts = await provider.listAccounts();
     if (accounts.length > 0) {
       const currentAccount = accounts[0];
@@ -79,8 +76,45 @@ export const useAccountInfo = () => {
           }));
         })
         .catch((e) => console.log(e));
+
+      if (tokenUpdate) {
+        setAccountInfo((prevState) => ({
+          ...prevState,
+          myTokenBalance: tokenUpdate,
+        }));
+      }
+      if (liquityUpdate) {
+        setAccountInfo((prevState) => ({
+          ...prevState,
+          liquidityTokenBalance: liquityUpdate,
+        }));
+      }
+      if (wethUpdate) {
+        setAccountInfo((prevState) => ({
+          ...prevState,
+          WETHBalance: wethUpdate,
+        }));
+      }
     }
   };
+  // state is initialized with undefined values
+  const [accountInfo, setAccountInfo] = useState<AccountInfo>({
+    currentAccount: undefined,
+    balance: undefined,
+    chainId: undefined,
+    chainName: undefined,
+    myTokenBalance:undefined,
+    WETHBalance: undefined,
+    liquidityTokenBalance: undefined,
+    connectMetaMask: connectMetaMask,
+    disconnectMetaMask: disconnectMetaMask,
+    getCurrentAccount: getCurrentAccount,
+  });
+
+
+  
+
+
 
   return { ...accountInfo, connectMetaMask, disconnectMetaMask };
 };

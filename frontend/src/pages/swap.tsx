@@ -9,7 +9,10 @@ import { useAccountInfoContext } from 'utils/accountInfoContext';
 const SwapPage: NextPage = () => {
   // Call the useAccountInfo hook
   const accountInfo = useAccountInfoContext();
-  const { currentAccount, chainName, balance } = accountInfo;
+  const { currentAccount, chainName, balance,
+    myTokenBalance,
+    WETHBalance,
+    liquidityTokenBalance,} = accountInfo;
 
   // Redirect to NotConnectedPage if there is no current account
   if (!currentAccount) {
@@ -34,8 +37,9 @@ const SwapPage: NextPage = () => {
             </Heading>
             <Text> Chain Name: {chainName} </Text>
             <Text>ETH Balance: {balance}</Text>
-            <Text> Balance of Custom ERC-20: 0 </Text>
-            <Text> Balance of Custom ERC-20: 0 </Text>
+            <Text> Balance of WETH: {WETHBalance} </Text>
+            <Text> Balance of Custom Token: {myTokenBalance} </Text>
+            <Text> Balance of Liquidity Token: {liquidityTokenBalance} </Text>
       </Box>
       <Flex direction="row" >
       <Box w='100%' p={4} mt={4} mr={2} borderWidth="2px" borderRadius="lg" borderColor="gray.800">

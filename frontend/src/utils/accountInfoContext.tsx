@@ -9,8 +9,12 @@ const AccountInfoContext = createContext<AccountInfo>({
   balance: undefined,
   chainId: undefined,
   chainName: undefined,
+  myTokenBalance: undefined,
+  WETHBalance: undefined,
+  liquidityTokenBalance: undefined,
   connectMetaMask: undefined,
   disconnectMetaMask: undefined,
+  getCurrentAccount: undefined,
 });
 
 // Custom hook to access the account info in components
