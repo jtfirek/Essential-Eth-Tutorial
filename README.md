@@ -1,16 +1,16 @@
-# Ether.fi Project
+# Mint-Swap-dApp
 
-Here is a link to the `Pool.t.sol` that completes the assigned task:
-[Link to Example File](./forge-tests/test/Pool.t.sol)
+I was playing around with forge tests to deploy and swap in Uniswap V2 liquitly pools. [Link to Example File](./forge-tests/test/Pool.t.sol). I got curious about front end interact with smart contract so I have been building a fullstack dApp.
 
-After completing a Solidity assignment, I decided to build a full-stack Dapp uses all the skills you guys are looking for in the Decentralized Application Front End Developer. My Dapp enables users to create their own ERC-20 tokens, wrap ETH into ERC-20s, deploy an ERC20/ERC20 Uniswap V2 liquidity pool, and withdraw liquidity using a metamask wallet.
+My Dapp enables users to create their own ERC-20 tokens, wrap ETH into ERC-20s, deploy an ERC20/ERC20 Uniswap V2 liquidity pool, and withdraw liquidity using a metamask wallet.
 
 
 # Project Structure
 
+- `forge-tests`: playing around with doing things with erc-20s in Uniswap in a forked evironment. Then I wrote a ERC-20 contract with Uniswap V2 functionality built in.
 - `Frontend`: built with React, Next.js, Chakra UI, and ether.js
 - `backend`: Node.js server with a GraphQL gateway
 - `contracts`: deployed Solidity smart contracts
 - `migrates`: scripts for deploying contracts
-- `forge-tests`: tests the smart contracts and contains the orginial task
+
 
