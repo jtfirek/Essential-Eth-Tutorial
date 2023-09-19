@@ -1,9 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ethers } from "ethers";
 import { provider, setProviderandSigner } from "./contractFunctions";
 
 
+const WETH_ADDRESS = '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6';
 
+const erc20Abi = [
+  'function balanceOf(address owner) view returns (uint256)',
+];
+
+const wethContract = new ethers.Contract(WETH_ADDRESS, erc20Abi, provider);
 
 export type AccountInfo = {
   currentAccount: string | undefined;
@@ -76,6 +82,16 @@ export const useAccountInfo = () => {
           }));
         })
         .catch((e) => console.log(e));
+
+      const wethContract = new ethers.Contract(WETH_ADDRESS, erc20Abi, provider);
+      wethContract.balanceOf(currentAccount).then((balance: ethers.BigNumberish) => {
+        const formattedBalance = ethers.utils.formatEther(balance);
+        setAccountInfo((prevState) => ({
+          ...prevState,
+          WETHBalance: formattedBalance,
+        }));
+      })
+      .catch((e: any) => console.log(e));
 
       if (tokenUpdate) {
         setAccountInfo((prevState) => ({

@@ -2,7 +2,6 @@ import { createContext, useContext } from 'react';
 import { useAccountInfo, AccountInfo } from './accountsLogic';
 
 
-
 // Create a global state for the account info
 const AccountInfoContext = createContext<AccountInfo>({
   currentAccount: undefined,
